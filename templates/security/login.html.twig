@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!
+{% endblock %}
+
+{% block body %}
+    <section class="container py- my-3">
+        <div class="row">
+            <div class="col-8"></div>
+            <div class="col-4">
+                <form method="post">
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    {% if app.user %}
+                        <div class="mb-3">
+                            You are logged in as
+                            {{ app.user.userIdentifier }},
+                            <a href="{{ path('app_logout') }}">Logout</a>
+                        </div>
+                    {% endif %}
+
+                    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+                    <label for="inputUsername">Nom d'utilisateur</label>
+                    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control mt-1" autocomplete="username" required="required" autofocus="autofocus">
+                        <label for="inputPassword" class="mt-2">Mot de passe</label>
+                        <input type="password" name="password" id="inputPassword" class="form-control mt-1" autocomplete="current-password" required="required">
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                <button class="btn btn-sm btn-primary mt-2" type="submit">
+                                    Sign in
+                                </button>
+                                <a href="{{ path('app_register') }}" class="fst-italic text-primary-emphasis mx-2">Avoir un compte</a>
+
+                                <a href="{{ path('app_forgot_password_request') }}" class="fst-italic text-danger">Mot de passe oublié</a>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </section>
+
+
+            {% endblock %}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation d'e-mail</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .email-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .confirm-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .confirm-button:hover {
+            background-color: #0056b3;
+        }
+        .expiration-message {
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+        }
+        .signature {
+            font-size: 14px;
+            color: #888;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h1>Bonjour ! Veuillez confirmer votre e-mail</h1>
+        <p>
+            Pour confirmer votre adresse e-mail, veuillez cliquer sur le lien ci-dessous :<br><br>
+            <a href="{{ signedUrl|raw }}" class="confirm-button">Confirmer mon e-mail</a>
+        </p>
+        <p class="expiration-message">
+            Ce lien expirera dans {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+        </p>
+        <p class="signature">
+            Cordialement,<br>
+            L'équipe de [Votre Application]
+        </p>
+    </div>
+</body>
+</html>

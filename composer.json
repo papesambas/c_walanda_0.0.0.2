@@ -12,6 +12,9 @@
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
+        "friendsofsymfony/ckeditor-bundle": "^2.6",
+        "helios-ag/fm-elfinder-bundle": "^12.7",
+        "liip/imagine-bundle": "^2.13",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.1",
         "symfony/asset": "6.4.*",
@@ -43,6 +46,8 @@
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
         "symfony/yaml": "6.4.*",
+        "symfonycasts/reset-password-bundle": "^1.23",
+        "symfonycasts/verify-email-bundle": "^1.17",
         "symfonycorp/platformsh-meta": "^1.0",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
@@ -78,7 +83,9 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "importmap:install": "symfony-cmd"
+            "importmap:install": "symfony-cmd",
+            "ckeditor:install": "symfony-cmd",
+            "elfinder:install": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
@@ -98,6 +105,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.1",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
