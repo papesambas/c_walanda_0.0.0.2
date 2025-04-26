@@ -40,10 +40,10 @@ class Telephones1
     )]
     private ?string $numero = null;
 
-    #[ORM\OneToOne(mappedBy: 'telephone1', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Peres::class, mappedBy: 'telephone1', cascade: ['persist', 'remove'])]
     private ?Peres $peres = null;
 
-    #[ORM\OneToOne(mappedBy: 'telephone1', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Meres::class, mappedBy: 'telephone1', cascade: ['persist', 'remove'])]
     private ?Meres $meres = null;
 
     public function getId(): ?int

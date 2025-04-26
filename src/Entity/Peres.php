@@ -64,12 +64,12 @@ class Peres
     )]
     private ?Professions $profession = null;
 
-    #[ORM\OneToOne(inversedBy: 'peres', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(inversedBy: 'peres', targetEntity: Ninas::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: "nina_id", referencedColumnName: "id",nullable: true)]
     private ?Ninas $nina = null;
 
-    #[ORM\OneToOne(inversedBy: 'peres', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne(inversedBy: 'peres', targetEntity: Telephones1::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: "telephone1_id", referencedColumnName: "id",nullable: false)]
     #[Assert\NotBlank(message: 'Le numéro de téléphone 1 ne peut pas être vide')]
     #[Assert\NotNull(message: 'Le numéro de téléphone 1 ne peut pas être nul')]
     #[Assert\Valid]
@@ -79,10 +79,10 @@ class Peres
     )]
     private ?Telephones1 $telephone1 = null;
 
-    #[ORM\OneToOne(inversedBy: 'peres', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(inversedBy: 'peres', targetEntity: Telephones2::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: "telephone2_id", referencedColumnName: "id",nullable: true)]
     #[Assert\Valid]
-    private ?telephones2 $telephone2 = null;
+    private ?Telephones2 $telephone2 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(

@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ParentsRepository;
+use App\Entity\Trait\SlugTrait;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Trait\CreatedAtTrait;
+use App\Repository\ParentsRepository;
+use App\Entity\Trait\EntityTrackingTrait;
 
 #[ORM\Entity(repositoryClass: ParentsRepository::class)]
 #[ORM\Table(name: 'parents')]
@@ -12,6 +15,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_parents_fullname', columns: ['fullname'])]
 class Parents
 {
+    use CreatedAtTrait;
+    use EntityTrackingTrait;
+    use SlugTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
