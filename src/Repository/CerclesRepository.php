@@ -16,6 +16,34 @@ class CerclesRepository extends ServiceEntityRepository
         parent::__construct($registry, Cercles::class);
     }
 
+    public function save(Cercles $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    public function remove(Cercles $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function findByAll(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('r') // Charge toutes les relations
+            ->leftJoin('c.region', 'r') // <-- Remplacer innerJoin par leftJoin
+            ->orderBy('c.id', 'ASC')
+            ->getQuery()
+            ->enableResultCache(3600, 'cercles_list') // Clé explicite
+            ->getResult();
+    }
+
     //    /**
     //     * @return Cercles[] Returns an array of Cercles objects
     //     */

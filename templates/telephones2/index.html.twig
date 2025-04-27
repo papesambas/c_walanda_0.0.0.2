@@ -3,39 +3,56 @@
 {% block title %}Telephones2 index{% endblock %}
 
 {% block body %}
-    <h1>Telephones2 index</h1>
+<h1>Telephones2 index</h1>
 
-    <table class="table">
+<table class="table table-striped table-bordered table-hover table-sm">
+    <thead>
+        <tr>
+            <th colspan="6">Liste des N° Téléphones 2</th>
+        </tr>
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Numero</th>
-                <th>CreatedAt</th>
-                <th>UpdatedAt</th>
-                <th>Slug</th>
+                <th>Numéro</th>
+                <th>Titulaire</th>
+                <th>Profession</th>
                 <th>actions</th>
             </tr>
         </thead>
-        <tbody>
+    <tbody>
         {% for telephones2 in telephones2s %}
-            <tr>
-                <td>{{ telephones2.id }}</td>
-                <td>{{ telephones2.numero }}</td>
-                <td>{{ telephones2.createdAt ? telephones2.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ telephones2.updatedAt ? telephones2.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ telephones2.slug }}</td>
-                <td>
-                    <a href="{{ path('app_telephones2_show', {'id': telephones2.id}) }}">show</a>
-                    <a href="{{ path('app_telephones2_edit', {'id': telephones2.id}) }}">edit</a>
-                </td>
-            </tr>
+        <tr>
+            <td>{{ telephones2.id }}</td>
+            <td>{{ telephones2.numero }}</td>
+            <td>
+                {% if telephones2.peres is not null %}
+                {{ telephones2.peres }}
+                {% elseif telephones2.meres is not null %}
+                {{ telephones2.meres }}
+                {% else %}
+                Non renseigné
+                {% endif %}
+            </td>
+            <td> {% if telephones2.peres is not null %}
+                {{ telephones2.peres.profession }}
+                {% elseif telephones2.meres is not null %}
+                {{ telephones2.meres.profession }}
+                {% else %}
+                Non renseigné
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ path('app_telephones2_show', {'id': telephones2.id}) }}">show</a>
+                <a href="{{ path('app_telephones2_edit', {'id': telephones2.id}) }}">edit</a>
+            </td>
+        </tr>
         {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
+        <tr>
+            <td colspan="6">no records found</td>
+        </tr>
         {% endfor %}
-        </tbody>
-    </table>
+    </tbody>
+</table>
 
-    <a href="{{ path('app_telephones2_new') }}">Create new</a>
+<a href="{{ path('app_telephones2_new') }}">Create new</a>
 {% endblock %}

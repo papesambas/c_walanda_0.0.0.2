@@ -15,6 +15,37 @@ class LieuNaissancesRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, LieuNaissances::class);
     }
+    public function save(LieuNaissances $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    public function remove(LieuNaissances $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    public function findByAll(): array
+    {
+        return $this->createQueryBuilder('l')
+            ->addSelect('c','ce','r') // Charge toutes les relations
+            ->leftJoin('l.commune', 'c') // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('c.cercle', 'ce') // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('ce.region', 'r') // <-- Remplacer innerJoin par leftJoin
+            ->orderBy('r.id', 'ASC')
+            ->addOrderBy('ce.id', 'ASC')
+            ->addOrderBy('c.id', 'ASC')
+            ->addOrderBy('l.id', 'ASC')
+            ->getQuery()
+            ->enableResultCache(3600, 'lieu_naissances_list') // Clé explicite
+            ->getResult();
+    }
 
     //    /**
     //     * @return LieuNaissances[] Returns an array of LieuNaissances objects

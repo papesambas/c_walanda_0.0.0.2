@@ -4,26 +4,53 @@ namespace App\Controller;
 
 use App\Entity\Telephones1;
 use App\Form\Telephones1Type;
-use App\Repository\Telephones1Repository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\Telephones1Repository;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\Cache;
+
 
 #[Route('/telephones1')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class Telephones1Controller extends AbstractController
 {
-    #[Route(name: 'app_telephones1_index', methods: ['GET'])]
-    public function index(Telephones1Repository $telephones1Repository): Response
+    #[Route('/', name: 'app_telephones1_index', methods: ['GET'])]
+    #[Cache(vary: ['Accept-Encoding'], public: true, maxage: 3600)] // Met en cache le rendu complet de la page
+    public function index(Telephones1Repository $telephones1Repository, CacheInterface $cache): Response
     {
+        //$cache->delete('telephones1_data'); // Supprime le cache si besoin
+        $telephones1 = $cache->get('telephones1_list', function (ItemInterface $item) use ($telephones1Repository) {
+            $item->expiresAfter(3600); // 1h
+    
+            $results = $telephones1Repository->findByAll();
+    
+            // 🔥 Transformation en tableau simple :
+            $data = [];
+            foreach ($results as $telephone) {
+                $data[] = [
+                    'id' => $telephone->getId(),
+                    'numero' => $telephone->getNumero(),
+                    'peres' => $telephone->getPeres(),
+                    'meres' => $telephone->getMeres(),
+                    'pere.profession' => $telephone->getPeres()?->getProfession()?->getDesignation(),
+                    'mere.profession' => $telephone->getMeres()?->getProfession()?->getDesignation(),
+                ];
+            }
+    
+            return $data;
+        });
+    
         return $this->render('telephones1/index.html.twig', [
-            'telephones1s' => $telephones1Repository->findAll(),
+            'telephones1s' => $telephones1,
         ]);
     }
-
+    
     #[Route('/new', name: 'app_telephones1_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {

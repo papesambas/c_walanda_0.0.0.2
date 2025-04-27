@@ -9,10 +9,14 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Designation</th>
+                <th>Région de :</th>
+                <th>Cercle de :</th>
+                <th>Commune de :</th>
+                <th>Quartier de :</th>
+                {#<th>Designation</th>
                 <th>CreatedAt</th>
                 <th>UpdatedAt</th>
-                <th>Slug</th>
+                <th>Slug</th>#}
                 <th>actions</th>
             </tr>
         </thead>
@@ -20,10 +24,13 @@
         {% for lieu_naissance in lieu_naissances %}
             <tr>
                 <td>{{ lieu_naissance.id }}</td>
+                <td>{{ lieu_naissance.commune.cercle.region }}</td>
+                <td>{{ lieu_naissance.commune.cercle }}</td>
+                <td>{{ lieu_naissance.commune }}</td>
                 <td>{{ lieu_naissance.designation }}</td>
-                <td>{{ lieu_naissance.createdAt ? lieu_naissance.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                {#<td>{{ lieu_naissance.createdAt ? lieu_naissance.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ lieu_naissance.updatedAt ? lieu_naissance.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ lieu_naissance.slug }}</td>
+                <td>{{ lieu_naissance.slug }}</td>#}
                 <td>
                     <a href="{{ path('app_lieu_naissances_show', {'id': lieu_naissance.id}) }}">show</a>
                     <a href="{{ path('app_lieu_naissances_edit', {'id': lieu_naissance.id}) }}">edit</a>

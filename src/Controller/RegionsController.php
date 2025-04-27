@@ -6,21 +6,30 @@ use App\Entity\Regions;
 use App\Form\RegionsType;
 use App\Repository\RegionsRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/regions')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class RegionsController extends AbstractController
 {
     #[Route(name: 'app_regions_index', methods: ['GET'])]
-    public function index(RegionsRepository $regionsRepository): Response
+    public function index(RegionsRepository $regionsRepository, CacheInterface $cache): Response
     {
+        $regions = $cache->get('regions_list', function (ItemInterface $item) use ($regionsRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            // On va chercher les cercles en BDD seulement si pas encore en cache
+            return $regionsRepository->findAll();
+        });
+
         return $this->render('regions/index.html.twig', [
-            'regions' => $regionsRepository->findAll(),
+            'regions' => $regions,
         ]);
     }
 

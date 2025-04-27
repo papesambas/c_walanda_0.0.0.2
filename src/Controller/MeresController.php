@@ -6,21 +6,31 @@ use App\Entity\Meres;
 use App\Form\MeresType;
 use App\Repository\MeresRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/meres')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class MeresController extends AbstractController
 {
     #[Route(name: 'app_meres_index', methods: ['GET'])]
-    public function index(MeresRepository $meresRepository): Response
+    public function index(MeresRepository $meresRepository, CacheInterface $cache): Response
     {
+        $meres = $cache->get('meres_list', function (ItemInterface $item) use ($meresRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            // On va chercher les cercles en BDD seulement si pas encore en cache
+            return $meresRepository->findAll();
+        });
+
+
         return $this->render('meres/index.html.twig', [
-            'meres' => $meresRepository->findAll(),
+            'meres' => $meres,
         ]);
     }
 

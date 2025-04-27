@@ -6,21 +6,30 @@ use App\Entity\Prenoms;
 use App\Form\PrenomsType;
 use App\Repository\PrenomsRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/prenoms')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class PrenomsController extends AbstractController
 {
     #[Route(name: 'app_prenoms_index', methods: ['GET'])]
-    public function index(PrenomsRepository $prenomsRepository): Response
+    public function index(PrenomsRepository $prenomsRepository, CacheInterface $cache): Response
     {
+        $prenoms = $cache->get('prenoms_list', function (ItemInterface $item) use ($prenomsRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            // On va chercher les cercles en BDD seulement si pas encore en cache
+            return $prenomsRepository->findAll();
+        });
+
         return $this->render('prenoms/index.html.twig', [
-            'prenoms' => $prenomsRepository->findAll(),
+            'prenoms' => $prenoms,
         ]);
     }
 

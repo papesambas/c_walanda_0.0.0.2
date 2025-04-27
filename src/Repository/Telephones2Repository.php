@@ -16,6 +16,25 @@ class Telephones2Repository extends ServiceEntityRepository
         parent::__construct($registry, Telephones2::class);
     }
 
+        /**
+     * Summary of findByAll
+     * @return array
+     */
+    public function findByAll(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->addSelect('p', 'prp', 'm', 'prm') // Charge toutes les relations
+            ->leftJoin('t.peres', 'p')          // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('p.profession', 'prp')
+            ->leftJoin('t.meres', 'm')          // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('m.profession', 'prm')
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->enableResultCache(3600, 'telephones2_list') // Clé explicite
+            ->getResult();
+    }
+
+
     //    /**
     //     * @return Telephones2[] Returns an array of Telephones2 objects
     //     */

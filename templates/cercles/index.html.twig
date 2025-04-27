@@ -9,10 +9,11 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Designation</th>
-                <th>CreatedAt</th>
+                <th>Région de :</th>
+                <th>Cercle de :</th>
+                {#<th>CreatedAt</th>
                 <th>UpdatedAt</th>
-                <th>Slug</th>
+                <th>Slug</th>#}
                 <th>actions</th>
             </tr>
         </thead>
@@ -20,10 +21,11 @@
         {% for cercle in cercles %}
             <tr>
                 <td>{{ cercle.id }}</td>
+                <td>{{ cercle.region }}</td>
                 <td>{{ cercle.designation }}</td>
-                <td>{{ cercle.createdAt ? cercle.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                {#<td>{{ cercle.createdAt ? cercle.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ cercle.updatedAt ? cercle.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ cercle.slug }}</td>
+                <td>{{ cercle.slug }}</td>#}
                 <td>
                     <a href="{{ path('app_cercles_show', {'id': cercle.id}) }}">show</a>
                     <a href="{{ path('app_cercles_edit', {'id': cercle.id}) }}">edit</a>

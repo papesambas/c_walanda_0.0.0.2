@@ -52,7 +52,7 @@ class Meres
         "this.getPrenom() !== null",
         message: 'Le prénom ne peut pas être vide'
     )]
-    private ?prenoms $prenom = null;
+    private ?Prenoms $prenom = null;
 
     #[ORM\ManyToOne(inversedBy: 'meres')]
     #[ORM\JoinColumn(nullable: false)]
@@ -63,7 +63,7 @@ class Meres
         "this.getProfession() !== null",
         message: 'La profession ne peut pas être vide'
     )]
-    private ?professions $profession = null;
+    private ?Professions $profession = null;
 
     #[ORM\OneToOne(inversedBy: 'meres', targetEntity: Ninas::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: "nina_id", referencedColumnName: "id",nullable: true)]
@@ -115,11 +115,6 @@ class Meres
         message: "Seules les lettres, espaces, apostrophes et tirets sont autorisés",
         normalizer: 'trim'
     )]
-    #[Assert\Expression(
-        "this.getFullname() !== null",
-        message: 'Le nom complet ne peut pas être vide'
-    )]
-    #[Assert\NotBlank(message: 'Le nom complet ne peut pas être vide')]
     private ?string $fullname = null;
 
     /**
@@ -150,24 +145,24 @@ class Meres
         return $this;
     }
 
-    public function getPrenom(): ?prenoms
+    public function getPrenom(): ?Prenoms
     {
         return $this->prenom;
     }
 
-    public function setPrenom(?prenoms $prenom): static
+    public function setPrenom(?Prenoms $prenom): static
     {
         $this->prenom = $prenom;
 
         return $this;
     }
 
-    public function getProfession(): ?professions
+    public function getProfession(): ?Professions
     {
         return $this->profession;
     }
 
-    public function setProfession(?professions $profession): static
+    public function setProfession(?Professions $profession): static
     {
         $this->profession = $profession;
 
@@ -186,12 +181,12 @@ class Meres
         return $this;
     }
 
-    public function getTelephone1(): ?telephones1
+    public function getTelephone1(): ?Telephones1
     {
         return $this->telephone1;
     }
 
-    public function setTelephone1(telephones1 $telephone1): static
+    public function setTelephone1(Telephones1 $telephone1): static
     {
         $this->telephone1 = $telephone1;
 

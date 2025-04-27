@@ -4,23 +4,48 @@ namespace App\Controller;
 
 use App\Entity\LieuNaissances;
 use App\Form\LieuNaissancesType;
-use App\Repository\LieuNaissancesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use App\Repository\LieuNaissancesRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 
 #[Route('/lieu/naissances')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
+
 final class LieuNaissancesController extends AbstractController
 {
     #[Route(name: 'app_lieu_naissances_index', methods: ['GET'])]
-    public function index(LieuNaissancesRepository $lieuNaissancesRepository): Response
+    #[Cache(vary: ['Accept-Encoding'], public: true, maxage: 3600)] // Met en cache le rendu complet de la page
+    public function index(LieuNaissancesRepository $lieuNaissancesRepository, CacheInterface $cache): Response
     {
+        $lieux = $cache->get('lieu_naissances_list', function (ItemInterface $item) use ($lieuNaissancesRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            $results = $lieuNaissancesRepository->findByAll();
+            // 🔥 Transformation en tableau simple :
+                $data = [];
+                foreach ($results as $lieu) {
+                    $data[] = [
+                        'id' => $lieu->getId(),
+                        'commune' => $lieu->getCommune(),
+                        'cercle' => $lieu->getCommune()->getCercle(),
+                        'region' => $lieu->getCommune()->getCercle()->getRegion(),
+                        'designation' => $lieu->getDesignation(),
+                    ];
+                }
+            
+            // On va chercher les lieux de naissance en BDD seulement si pas encore en cache
+            return $data;
+        });
+
         return $this->render('lieu_naissances/index.html.twig', [
-            'lieu_naissances' => $lieuNaissancesRepository->findAll(),
+            'lieu_naissances' => $lieux,
         ]);
     }
 

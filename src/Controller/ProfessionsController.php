@@ -4,23 +4,32 @@ namespace App\Controller;
 
 use App\Entity\Professions;
 use App\Form\ProfessionsType;
-use App\Repository\ProfessionsRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\ProfessionsRepository;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/professions')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ProfessionsController extends AbstractController
 {
     #[Route(name: 'app_professions_index', methods: ['GET'])]
-    public function index(ProfessionsRepository $professionsRepository): Response
+    public function index(ProfessionsRepository $professionsRepository, CacheInterface $cache): Response
     {
+        $professions = $cache->get('professions_list', function (ItemInterface $item) use ($professionsRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            // On va chercher les cercles en BDD seulement si pas encore en cache
+            return $professionsRepository->findAll();
+        });
+
         return $this->render('professions/index.html.twig', [
-            'professions' => $professionsRepository->findAll(),
+            'professions' => $professions,
         ]);
     }
 

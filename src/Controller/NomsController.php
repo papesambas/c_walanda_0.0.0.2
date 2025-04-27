@@ -6,19 +6,28 @@ use App\Entity\Noms;
 use App\Form\NomsType;
 use App\Repository\NomsRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/noms')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class NomsController extends AbstractController
 {
     #[Route(name: 'app_noms_index', methods: ['GET'])]
-    public function index(NomsRepository $nomsRepository): Response
+    public function index(NomsRepository $nomsRepository, CacheInterface $cache): Response
     {
+        $noms = $cache->get('noms_list', function (ItemInterface $item) use ($nomsRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            // On va chercher les cercles en BDD seulement si pas encore en cache
+            return $nomsRepository->findAll();
+        });
+
         return $this->render('noms/index.html.twig', [
             'noms' => $nomsRepository->findAll(),
         ]);

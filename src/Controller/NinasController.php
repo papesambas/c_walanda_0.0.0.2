@@ -6,21 +6,30 @@ use App\Entity\Ninas;
 use App\Form\NinasType;
 use App\Repository\NinasRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/ninas')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class NinasController extends AbstractController
 {
     #[Route(name: 'app_ninas_index', methods: ['GET'])]
-    public function index(NinasRepository $ninasRepository): Response
+    public function index(NinasRepository $ninasRepository, CacheInterface $cache): Response
     {
+        $ninas = $cache->get('ninas_list', function (ItemInterface $item) use ($ninasRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            // On va chercher les cercles en BDD seulement si pas encore en cache
+            return $ninasRepository->findAll();
+        });
+
         return $this->render('ninas/index.html.twig', [
-            'ninas' => $ninasRepository->findAll(),
+            'ninas' => $ninas,
         ]);
     }
 

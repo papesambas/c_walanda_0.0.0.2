@@ -6,21 +6,30 @@ use App\Entity\Peres;
 use App\Form\PeresType;
 use App\Repository\PeresRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/peres')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class PeresController extends AbstractController
 {
     #[Route(name: 'app_peres_index', methods: ['GET'])]
-    public function index(PeresRepository $peresRepository): Response
+    public function index(PeresRepository $peresRepository, CacheInterface $cache): Response
     {
+        $peres = $cache->get('peres_list', function (ItemInterface $item) use ($peresRepository) {
+            $item->expiresAfter(3600); // Cache pendant 1 heure
+
+            // On va chercher les cercles en BDD seulement si pas encore en cache
+            return $peresRepository->findAll();
+        });
+
         return $this->render('peres/index.html.twig', [
-            'peres' => $peresRepository->findAll(),
+            'peres' => $peres,
         ]);
     }
 

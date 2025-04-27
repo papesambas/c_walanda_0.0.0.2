@@ -94,11 +94,6 @@ class Peres
         message: "Seules les lettres, espaces, apostrophes et tirets sont autorisés",
         normalizer: 'trim'
     )]
-    #[Assert\Expression(
-        "this.getFullname() !== null",
-        message: 'Le nom complet ne peut pas être vide'
-    )]
-    #[Assert\NotBlank(message: 'Le nom complet ne peut pas être vide')]
     private ?string $fullname = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -195,12 +190,12 @@ class Peres
         return $this;
     }
 
-    public function getTelephone2(): ?telephones2
+    public function getTelephone2(): ?Telephones2
     {
         return $this->telephone2;
     }
 
-    public function setTelephone2(?telephones2 $telephone2): static
+    public function setTelephone2(?Telephones2 $telephone2): static
     {
         $this->telephone2 = $telephone2;
 

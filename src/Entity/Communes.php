@@ -102,7 +102,7 @@ class Communes
     }
     public function __toString(): string
     {
-        return $this->designation;
+        return $this->designation ?? '';
     }
 
     public function getCercle(): ?Cercles

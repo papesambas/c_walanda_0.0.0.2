@@ -9,10 +9,12 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Designation</th>
-                <th>CreatedAt</th>
+                <th>Région de :</th>
+                <th>Cercle de :</th>
+                <th>Commune de :</th>
+                {#<th>CreatedAt</th>
                 <th>UpdatedAt</th>
-                <th>Slug</th>
+                <th>Slug</th>#}
                 <th>actions</th>
             </tr>
         </thead>
@@ -20,10 +22,12 @@
         {% for commune in communes %}
             <tr>
                 <td>{{ commune.id }}</td>
+                <td>{{ commune.cercle.region }}</td>
+                <td>{{ commune.cercle }}</td>
                 <td>{{ commune.designation }}</td>
-                <td>{{ commune.createdAt ? commune.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                {#<td>{{ commune.createdAt ? commune.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ commune.updatedAt ? commune.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ commune.slug }}</td>
+                <td>{{ commune.slug }}</td>#}
                 <td>
                     <a href="{{ path('app_communes_show', {'id': commune.id}) }}">show</a>
                     <a href="{{ path('app_communes_edit', {'id': commune.id}) }}">edit</a>

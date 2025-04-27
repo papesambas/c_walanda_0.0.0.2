@@ -80,7 +80,7 @@ class Professions
     }
     public function __toString(): string
     {
-        return $this->designation;
+        return $this->designation ?? '';
     }
 
     /**
