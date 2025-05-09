@@ -13,12 +13,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 
 #[Route('/regions')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class RegionsController extends AbstractController
 {
     #[Route(name: 'app_regions_index', methods: ['GET'])]
+    #[Cache(vary: ['Accept-Encoding'], public: true, maxage: 3600)] // Met en cache le rendu complet de la page
     public function index(RegionsRepository $regionsRepository, CacheInterface $cache): Response
     {
         $regions = $cache->get('regions_list', function (ItemInterface $item) use ($regionsRepository) {

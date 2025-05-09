@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ninas index{% endblock %}
+
+{% block body %}
+    <h1>Ninas index</h1>
+
+    <table class="table table-striped table-bordered table-hover table-sm">
+        <thead>
+            <tr>
+                <th colspan="6">repertoire des N° Ninas</th>
+            </tr>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Numéro</th>
+                    <th>Titulaire</th>
+                    <th>Profession</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+        <tbody>
+            {% for nina in ninas %}
+            <tr>
+                <td>{{ nina.id }}</td>
+                <td>{{ nina.numero }}</td>
+                <td>
+                    {% if nina.peres is not null %}
+                    {{ nina.peres }}
+                    {% elseif nina.meres is not null %}
+                    {{ nina.meres }}
+                    {% else %}
+                    Non renseigné
+                    {% endif %}
+                </td>
+                <td> {% if nina.peres is not null %}
+                    {{ nina.peres.profession }}
+                    {% elseif nina.meres is not null %}
+                    {{ nina.meres.profession }}
+                    {% else %}
+                    Non renseigné
+                    {% endif %}
+                </td>
+                <td>
+                        <a href="{{ path('app_ninas_show', {'id': nina.id}) }}">show</a>
+                    <a href="{{ path('app_ninas_edit', {'id': nina.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_ninas_new') }}">Create new</a>
+{% endblock %}

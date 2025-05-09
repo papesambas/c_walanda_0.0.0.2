@@ -47,7 +47,7 @@ class Regions
     /**
      * @var Collection<int, Cercles>
      */
-    #[ORM\OneToMany(targetEntity: Cercles::class, mappedBy: 'region')]
+    #[ORM\OneToMany(targetEntity: Cercles::class, mappedBy: 'region',cascade: ['persist'])]
     private Collection $cercles;
 
     public function __construct()

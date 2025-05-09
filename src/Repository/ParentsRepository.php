@@ -16,6 +16,42 @@ class ParentsRepository extends ServiceEntityRepository
         parent::__construct($registry, Parents::class);
     }
 
+    public function add(Parents $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    public function remove(Parents $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function findByAll(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.pere', 'pere')
+            ->leftJoin('pere.profession', 'pere_profession')
+            ->leftJoin('pere.telephone1', 'pere_tel1')
+            ->leftJoin('pere.telephone2', 'pere_tel2')
+            ->leftJoin('p.mere', 'mere')
+            ->leftJoin('mere.profession', 'mere_profession')
+            ->leftJoin('mere.telephone1', 'mere_tel1')
+            ->leftJoin('mere.telephone2', 'mere_tel2')
+            ->addSelect('pere', 'pere_profession', 'pere_tel1', 'pere_tel2', 'mere', 'mere_profession', 'mere_tel1', 'mere_tel2')
+            ->addOrderBy('pere.fullname', 'ASC')
+            ->addOrderBy('mere.fullname', 'ASC')
+            ->addOrderBy('p.fullname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Parents[] Returns an array of Parents objects
     //     */

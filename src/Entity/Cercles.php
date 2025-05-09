@@ -56,7 +56,7 @@ class Cercles
     /**
      * @var Collection<int, Communes>
      */
-    #[ORM\OneToMany(targetEntity: Communes::class, mappedBy: 'cercle')]
+    #[ORM\OneToMany(targetEntity: Communes::class, mappedBy: 'cercle',cascade: ['persist'])]
     private Collection $communes;
 
     public function __construct()

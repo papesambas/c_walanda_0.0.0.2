@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parents index{% endblock %}
+
+{% block body %}
+    <h1>Parents index</h1>
+
+    <table class="table table-striped table-bordered table-hover table-sm">
+        <thead>
+            <tr>
+                <th colspan="6">Liste des Parents</th>
+            <tr>
+                <th>Id</th>
+                <th>Père</th>
+                <th>Profession du Père</th>
+                {#<th>Téléphone 1</th>
+                <th>Téléphone 2</th>#}
+                <th>Mère</th>
+                <th>Profession de la Mère</th>
+                {#<th>Téléphone 1</th>
+                <th>Téléphone 2</th>#}
+                {#<th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>Slug</th>#}
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for parent in parents %}
+            <tr>
+                <td>{{ parent.id }}</td>
+                <td>{{ parent.pere.fullname }}</td>
+                <td>{{ parent.pere.profession }}</td>
+                {#<td>{{ parent.pere.telephone1 }}</td>
+                <td>{{ parent.pere.telephone2 }}</td>#}
+                <td>{{ parent.mere.fullname }}</td>
+                {#<td>{{ parent.mere.fullname }}</td>#}
+                {#<td>{{ parent.mere.profession }}</td>#}         
+                <td>{{ parent.mere.profession }}</td>
+                {#<td>{{ parent.mere.telephone1 }}</td>
+                <td>{{ parent.mere.telephone2 }}</td>
+                <td>{{ parent.createdAt ? parent.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ parent.updatedAt ? parent.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ parent.slug }}</td>#}
+                <td>
+                    <a href="{{ path('app_parents_show', {'id': parent.id}) }}">show</a>
+                    <a href="{{ path('app_parents_edit', {'id': parent.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_parents_new') }}">Create new</a>
+{% endblock %}

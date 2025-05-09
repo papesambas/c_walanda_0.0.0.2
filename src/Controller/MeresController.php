@@ -21,11 +21,26 @@ final class MeresController extends AbstractController
     #[Route(name: 'app_meres_index', methods: ['GET'])]
     public function index(MeresRepository $meresRepository, CacheInterface $cache): Response
     {
+        //$cache->delete('meres_list'); // Supprime le cache avant de le recréer
         $meres = $cache->get('meres_list', function (ItemInterface $item) use ($meresRepository) {
             $item->expiresAfter(3600); // Cache pendant 1 heure
-
             // On va chercher les cercles en BDD seulement si pas encore en cache
-            return $meresRepository->findAll();
+
+            $results = $meresRepository->findByAll();
+            // 🔥 Transformation en tableau simple
+            $data = [];
+            foreach ($results as $mere) {
+                $data[] = [
+                    'id' => $mere->getId(),
+                    'fullname' => $mere->getFullname(),
+                    'profession' => $mere->getProfession(),
+                    'telephone1' => $mere->getTelephone1(),
+                    'telephone2' => $mere->getTelephone2(),
+                    'email' => $mere->getEmail(),
+                ];
+            }
+            return $data;
+
         });
 
 

@@ -48,6 +48,7 @@ final class CerclesController extends AbstractController
     }
 
     #[Route('/new', name: 'app_cercles_new', methods: ['GET', 'POST'])]
+    #[Cache(vary: ['Accept-Encoding'], public: true, maxage: 3600)] // Met en cache le rendu complet de la page
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $cercle = new Cercles();

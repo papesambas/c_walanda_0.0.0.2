@@ -21,11 +21,25 @@ final class PeresController extends AbstractController
     #[Route(name: 'app_peres_index', methods: ['GET'])]
     public function index(PeresRepository $peresRepository, CacheInterface $cache): Response
     {
+        //$cache->delete('peres_list'); // Supprime le cache avant de le recréer
         $peres = $cache->get('peres_list', function (ItemInterface $item) use ($peresRepository) {
             $item->expiresAfter(3600); // Cache pendant 1 heure
-
             // On va chercher les cercles en BDD seulement si pas encore en cache
-            return $peresRepository->findAll();
+            $results = $peresRepository->findByAll();
+            // 🔥 Transformation en tableau simple
+            $data = [];
+            foreach ($results as $pere) {
+                $data[] = [
+                    'id' => $pere->getId(),
+                    'fullname' => $pere->getFullname(),
+                    'profession' => $pere->getProfession(),
+                    'telephone1' => $pere->getTelephone1(),
+                    'telephone2' => $pere->getTelephone2(),
+                    'email' => $pere->getEmail(),
+                ];
+            }
+            return $data;
+
         });
 
         return $this->render('peres/index.html.twig', [

@@ -1,11 +1,3 @@
-import './bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
-
 // Importations communes
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import du CSS de Bootstrap
 import 'bootstrap'; // Import du JavaScript de Bootstrap
@@ -25,26 +17,24 @@ document.addEventListener('DOMContentLoaded', () => {
 // Highlight.js (optionnel)
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.highlightAll();
 
-//import "./vendor/toastr/toastr.min.js"; // Import du script
-//import "./vendor/toastr/toastr.min.css"; // Import du CSS
+import 'toastr/build/toastr.min.js';
+import 'toastr/build/toastr.min.css';
 
 // Configuration de Toastr (facultatif)
-//toastr.options = {
-//    closeButton: true,
-//    progressBar: true,
-//    positionClass: "toast-top-right",
-//    timeOut: "3000",
-//};
-
+toastr.options = {
+    closeButton: true,
+    progressBar: true,
+    positionClass: "toast-top-right",
+    timeOut: "3000",
+};
 
 // Import des styles Sass (optionnel)
 import './styles/app.scss';
-//import './scripts/select2.js';
+import './scripts/select2.js';
 //import './scripts/eleves.js';
 //import './scripts/checkbox.js';
 //import './scripts/sante.js';

@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Peres;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Data\SearchData;
+use App\Data\SearchParentData;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Peres>
@@ -15,6 +17,142 @@ class PeresRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Peres::class);
     }
+    public function add(Peres $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    public function remove(Peres $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    /**
+     * Summary of findByAll
+     * @return array
+     */
+    public function findByAll(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->addSelect('pr', 't1', 't2','n','pren') // Charge toutes les relations
+            ->leftJoin('p.profession', 'pr') // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('p.telephone1', 't1') // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('p.telephone2', 't2') // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('p.nom', 'n') // <-- Remplacer innerJoin par leftJoin
+            ->leftJoin('p.prenom', 'pren') // <-- Remplacer innerJoin par leftJoin
+            ->orderBy('n.designation', 'ASC')
+            ->addOrderBy('pren.designation', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Summary of findBySearchData
+     * @param \App\Data\SearchData $searchData
+     */
+    public function findBySearchData(SearchData $searchData)
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->select('p', 'pr', 't1', 't2', 'n')
+            ->leftJoin('p.profession', 'pr')
+            ->leftJoin('p.telephone1', 't1')
+            ->leftJoin('p.telephone2', 't2')
+            ->leftJoin('p.ninas', 'n');
+    
+        // Recherche sur le champ "q"
+        if (!empty($searchData->q)) {
+            $terms = explode(' ', $searchData->q); // Découper la recherche en mots
+            foreach ($terms as $key => $term) {
+                $normalizedTerm = mb_strtolower($term, 'UTF-8');
+                $normalizedTerm = iconv('UTF-8', 'ASCII//TRANSLIT', $normalizedTerm); // Supprimer les accents
+    
+                $queryBuilder
+                    ->andWhere('LOWER(p.fullname) LIKE :term' . $key)
+                    ->setParameter('term' . $key, '%' . $normalizedTerm . '%');
+            }
+        }
+    
+        // Filtre par profession
+        if (!empty($searchData->professions)) {
+            $queryBuilder
+                ->andWhere('p.profession IN (:professions)')
+                ->setParameter('professions', $searchData->professions);
+        }
+    
+        // Recherche par téléphone
+        if (!empty($searchData->telephone)) {
+            $normalizedTelephone = preg_replace('/\D/', '', $searchData->telephone);
+    
+            $queryBuilder
+                ->andWhere('t1.numero LIKE :telephone OR t2.numero LIKE :telephone')
+                ->setParameter('telephone', '%' . $normalizedTelephone . '%');
+        }
+    
+        // Recherche par NINA
+        if (!empty($searchData->nina)) {
+            $queryBuilder
+                ->andWhere('n.designation LIKE :nina')
+                ->setParameter('nina', '%' . $searchData->nina . '%');
+        }
+    
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+     /**
+      * Summary of findBySearchParentData
+      * @param \App\Data\SearchParentData $searchParentData
+      */
+     public function findBySearchParentData(SearchParentData $searchParentData)
+     {
+         // Si SearchParentData est null ou que ses propriétés sont vides, retourner une liste vide
+         if (
+             $searchParentData === null ||
+             (empty($searchParentData->qPere) && empty($searchParentData->telephonePere) && empty($searchParentData->ninaPere))
+         ) {
+             return [];
+         }
+     
+         $queryBuilder = $this->createQueryBuilder('p')
+             ->leftJoin('p.telephone1', 't1')
+             ->leftJoin('p.telephone2', 't2')
+             ->leftJoin('p.ninas', 'n')
+             ->addSelect('t1', 't2', 'n');
+     
+         // Recherche par fullname (insensible à la casse)
+         if (!empty($searchParentData->qPere)) {
+             $searchTerm = trim($searchParentData->qPere); // Supprimer les espaces inutiles
+             $queryBuilder
+                 ->andWhere('LOWER(p.fullname) LIKE LOWER(:fullname)')
+                 ->setParameter('fullname', '%' . $searchTerm . '%')
+                 ;
+         }
+     
+         // Recherche par téléphone
+         if (!empty($searchParentData->telephonePere)) {
+             $normalizedTelephone = preg_replace('/\D/', '', $searchParentData->telephonePere);
+             $queryBuilder
+                 ->andWhere('t1.numero LIKE :telephonePere OR t2.numero LIKE :telephonePere')
+                 ->setParameter('telephonePere', '%' . $normalizedTelephone . '%');
+         }
+     
+         // Recherche par NINA
+         if (!empty($searchParentData->ninaPere)) {
+             $queryBuilder
+                 ->andWhere('n.designation LIKE :ninaPere')
+                 ->setParameter('ninaPere', '%' . $searchParentData->ninaPere . '%');
+         }
+     
+         return $queryBuilder->getQuery()->getResult();
+     }     
+
+
 
     //    /**
     //     * @return Peres[] Returns an array of Peres objects

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\Trait\SlugTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UsersRepository;
 use App\Entity\Trait\CreatedAtTrait;
@@ -45,7 +47,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Assert\PasswordStrength([
         'minScore' => PasswordStrength::STRENGTH_MEDIUM, // Medium strong password required
-        'message' => 'Your password is too easy to guess. Company\'s security policy requires to use a stronger password.'
+        'message' => "Votre mot de passe n'est pas assez sécurisé. Veuillez en choisir un plus complexe conformément aux règles de l'entreprise."
     ])]
     private ?string $password = null;
 
@@ -104,6 +106,17 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    /**
+     * @var Collection<int, Parents>
+     */
+    #[ORM\OneToMany(targetEntity: Parents::class, mappedBy: 'user')]
+    private Collection $parents;
+
+    public function __construct()
+    {
+        $this->parents = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -265,5 +278,34 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Parents>
+     */
+    public function getParents(): Collection
+    {
+        return $this->parents;
+    }
+
+    public function addParent(Parents $parent): static
+    {
+        if (!$this->parents->contains($parent)) {
+            $this->parents->add($parent);
+            $parent->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParent(Parents $parent): static
+    {
+        if ($this->parents->removeElement($parent)) {
+            // set the owning side to null (unless already changed)
+            if ($parent->getUser() === $this) {
+                $parent->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 
 }

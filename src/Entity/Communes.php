@@ -55,7 +55,7 @@ class Communes
     /**
      * @var Collection<int, LieuNaissances>
      */
-    #[ORM\OneToMany(targetEntity: LieuNaissances::class, mappedBy: 'commune')]
+    #[ORM\OneToMany(targetEntity: LieuNaissances::class, mappedBy: 'commune',cascade: ['persist'])]
     private Collection $lieuNaissances;
 
     public function __construct()

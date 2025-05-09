@@ -5,16 +5,29 @@
 {% block body %}
     <h1>Peres index</h1>
 
-    <table class="table">
+    <table class="table table-striped table-bordered table-hover table-sm">
+        <thead>
+            <tr>
+                <th colspan="8">Peres list</th>
+            </tr>
+            <tr>
+                <th colspan="8">
+                    <form method="get" action="{{ path('app_peres_index') }}">
+                        <input type="text" name="search" placeholder="Search..." value="{{ app.request.get('search') }}">
+                        <button type="submit">Search</button>
+                    </form>
+                </th>
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Fullname</th>
+                <th>Profession</th>
+                <th>Téléphone 1</th>
+                <th>Téléphone 2</th>
                 <th>Email</th>
-                <th>Adresse</th>
-                <th>CreatedAt</th>
+                {#<th>CreatedAt</th>
                 <th>UpdatedAt</th>
-                <th>Slug</th>
+                <th>Slug</th>#}
                 <th>actions</th>
             </tr>
         </thead>
@@ -23,11 +36,13 @@
             <tr>
                 <td>{{ pere.id }}</td>
                 <td>{{ pere.fullname }}</td>
+                <td>{{ pere.profession }}</td>
+                <td>{{ pere.telephone1 }}</td>
+                <td>{{ pere.telephone2 }}</td>
                 <td>{{ pere.email }}</td>
-                <td>{{ pere.adresse }}</td>
-                <td>{{ pere.createdAt ? pere.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                {#<td>{{ pere.createdAt ? pere.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ pere.updatedAt ? pere.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ pere.slug }}</td>
+                <td>{{ pere.slug }}</td>#}
                 <td>
                     <a href="{{ path('app_peres_show', {'id': pere.id}) }}">show</a>
                     <a href="{{ path('app_peres_edit', {'id': pere.id}) }}">edit</a>
